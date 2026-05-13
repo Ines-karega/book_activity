@@ -21,8 +21,9 @@ class Base:
 
 
 class Book(Base):
-    def __init__(self, name, author, year, genre):
+    def __init__(self, name, book_id, author, year, genre):
         Base.__init__(self, name)
+        self.book_id     = book_id
         self.author      = author
         self.year        = year
         self.genre       = genre
@@ -58,12 +59,12 @@ class User(Base):
 
 # --- Run ---
 
-bookOne   = Book("The Lost River", author="Jack", year=2005, genre="Fiction")
-bookTwo   = Book("Dark Skies",     author="Eric", year=2010, genre="Novel")
-bookThree = Book("Quiet Roads",    author="Anna", year=1998, genre="Classic")
+bookOne   = Book("The Lost River", book_id="B001", author="Jack", year=2005, genre="Fiction")
+bookTwo   = Book("Dark Skies",     book_id="B002", author="Eric", year=2010, genre="Novel")
+bookThree = Book("Quiet Roads",    book_id="B003", author="Anna", year=1998, genre="Classic")
 
-userOne = User("John",  user_id="001")
-userTwo = User("Sarah", user_id="002")
+userOne = User("John",  user_id="U001")
+userTwo = User("Sarah", user_id="U002")
 
 userOne.borrow_book(bookOne)
 userTwo.borrow_book(bookOne)
