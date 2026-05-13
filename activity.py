@@ -5,69 +5,64 @@ import datetime
 
 class Base:
     def __init__(self, name):
-        self.file = f"{name}.json"
-
-        if os.path.exists(self.file):
-            with open(self.file) as f:
-                data = json.load(f)
-            for key, value in data.items():
-                setattr(self, key, value)
-            print(f"Loaded {self.file}")
-        else:
-            self.id = name                              # simple, readable ID
-            self.created_at = str(datetime.datetime.now())
-            self.updated_at = self.created_at
+        self.name       = name
+        self.created_at = str(datetime.datetime.now())
+        self.updated_at = self.created_at
 
     def save(self):
         self.updated_at = str(datetime.datetime.now())
-        with open(self.file, "w") as f:
+        with open(f"{self.name}.json", "w") as f:
             json.dump(self.__dict__, f, indent=2)
-        print(f"Saved {self.file}")
+        print(f"Saved {self.name}.json")
+
+    def load(self):
+        with open(f"{self.name}.json") as f:
+            data = json.load(f)
+        self.__dict__.update(data)
+        print(f"Loaded {self.name}.json")
 
 
 class Book(Base):
-    def __init__(self, name, title, author, genre):
-        Base.__init__(self, name)       # same as super().__init__(name)
-        if not os.path.exists(self.file):
-            self.title = title
-            self.author = author
-            self.genre = genre
-            self.is_borrowed = False
+    def __init__(self, name, author, year, genre):
+        Base.__init__(self, name)
+        self.author      = author
+        self.year        = year
+        self.genre       = genre
+        self.is_borrowed = False
+
+        if os.path.exists(f"{self.name}.json"):
+            self.load()
+        else:
+            self.save()
 
 
 class User(Base):
-    def __init__(self, name, username, email):
+    def __init__(self, name, user_id):
         Base.__init__(self, name)
-        if not os.path.exists(self.file):
-            self.username = username
-            self.email = email
+        self.user_id = user_id
 
-    def borrow(self, book):
-        if book.is_borrowed:
-            print(f"'{book.title}' is already borrowed — not available")
+        if os.path.exists(f"{self.name}.json"):
+            self.load()
         else:
+            self.save()
+
+    def borrow_book(self, book):
+        if not book.is_borrowed:
             book.is_borrowed = True
             book.save()
-            print(f"'{book.title}' was borrowed by {self.username}")
-
-    def return_book(self, book):
-        if not book.is_borrowed:
-            print(f"'{book.title}' was not borrowed — nothing to return")
+            print(f"{self.name} has borrowed '{book.name}'")
         else:
-            book.is_borrowed = False
-            book.save()
-            print(f"'{book.title}' was returned by {self.username}")
+            print(f"Sorry, '{book.name}' is currently unavailable")
 
 
 # --- Run ---
 
-book1 = Book("book1", title="Clean Code", author="Robert Martin", genre="Programming")
-book1.save()
+bookOne   = Book("The Lost River", author="Jack", year=2005, genre="Fiction")
+bookTwo   = Book("Dark Skies", author="Eric", year=2010, genre="Dystopian")
+bookThree = Book("Quiet Roads", author="Anna", year=1998, genre="Classic")
 
-user1 = User("user1", username="Alice", email="alice@email.com")
-user1.save()
+userOne = User("John", user_id="001")
 
-user1.borrow(book1)       # borrows it
-user1.borrow(book1)       # already borrowed
-user1.return_book(book1)  # returns it
-user1.return_book(book1)  # already returned
+userOne.borrow_book(bookOne)
+userOne.borrow_book(bookTwo)
+userOne.borrow_book(bookOne)  # already borrowed
