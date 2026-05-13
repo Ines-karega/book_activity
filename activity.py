@@ -33,6 +33,9 @@ class Book(Base):
         else:
             self.save()
 
+        self.is_borrowed = False
+        self.save()
+
 
 class User(Base):
     def __init__(self, name, user_id):
@@ -56,7 +59,7 @@ class User(Base):
 # --- Run ---
 
 bookOne   = Book("The Lost River", author="Jack", year=2005, genre="Fiction")
-bookTwo   = Book("Dark Skies",     author="Eric", year=2010, genre="Dystopian")
+bookTwo   = Book("Dark Skies",     author="Eric", year=2010, genre="Novel")
 bookThree = Book("Quiet Roads",    author="Anna", year=1998, genre="Classic")
 
 userOne = User("John",  user_id="001")
